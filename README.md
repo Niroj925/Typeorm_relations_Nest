@@ -1,6 +1,11 @@
 <<<<<<< HEAD
 # Typeorm_relations_Nest
 =======
+<<<<<<< HEAD
+// Your local changes
+=======
+// Changes from origin/master
+>>>>>>> origin/master
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
 </p>
@@ -75,3 +80,6 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 
 Nest is [MIT licensed](LICENSE).
 >>>>>>> c9fb9e0 (init project)
+=======
+# Typeorm_relations_Nest
+>>>>>>> origin/master

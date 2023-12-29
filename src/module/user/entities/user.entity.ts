@@ -1,5 +1,5 @@
 // user.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne } from 'typeorm';
 import { Channel } from 'src/module/channel/entities/channel.entity';
 
 @Entity('user')
@@ -13,6 +13,8 @@ export class User {
   @Column({unique:true})
   email:string;
 
-  @OneToMany(() => Channel, channel=> channel.user)
+  @OneToOne(() => Channel, channel=> channel.user)
   channel: Channel;
+
+  
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { VideoService } from './video.service';
 import { Video } from './entities/video.entity';
 import { CreateVideoDto } from './dto/create-video.dto';
@@ -18,10 +18,16 @@ export class VideoController {
     return this.videoService.findById(videoId);
   }
 
-  @Post()
-  async create(@Body() createVideoDto: CreateVideoDto): Promise<Video> {
-    return this.videoService.create(createVideoDto);
+  // @Post()
+  // async create(@Body() createVideoDto: CreateVideoDto): Promise<Video> {
+  //   return this.videoService.create(createVideoDto);
+  // }
+
+  @Post(':channelId') // Expecting channelId as a route parameter
+  async create(@Param('channelId') channelId: number, @Body() CreateVideoDto: CreateVideoDto): Promise<Video> {
+    return this.videoService.create(channelId, CreateVideoDto);
   }
+
 
   // Additional routes as needed
 }

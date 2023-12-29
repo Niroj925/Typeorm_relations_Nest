@@ -18,9 +18,14 @@ export class ChannelController {
     return this.channelService.findById(channelId);
   }
 
-  @Post()
-  async create(@Body() createChannelDto: CreateChannelDto): Promise<Channel> {
-    return this.channelService.create(createChannelDto);
+  // @Post()
+  // async create(@Body() createChannelDto: CreateChannelDto): Promise<Channel> {
+  //   return this.channelService.create(createChannelDto);
+  // }
+
+  @Post(':userId') // Expecting userId as a route parameter
+  async create(@Param('userId') userId: number, @Body() createChannelDto: CreateChannelDto): Promise<Channel> {
+    return this.channelService.create(userId, createChannelDto);
   }
 
   // Additional routes as needed

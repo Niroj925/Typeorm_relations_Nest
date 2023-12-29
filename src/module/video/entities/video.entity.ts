@@ -1,5 +1,6 @@
 import { Channel } from "src/module/channel/entities/channel.entity";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Tag } from "src/module/tag/entities/tag.entity";
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('video')
 export class Video {
@@ -11,4 +12,8 @@ export class Video {
 
     @ManyToOne(()=>Channel,(channel)=>channel.videos)
     channel:Channel;
+
+    @ManyToMany(()=>Tag)
+    @JoinTable()
+    tags:Tag[];
 }

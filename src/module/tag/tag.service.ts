@@ -1,14 +1,18 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Tag } from './entities/tag.entity';
 import { CreateTagDto } from './dto/create-tag.dto';
+import { Video } from '../video/entities/video.entity';
 
 @Injectable()
 export class TagService {
   constructor(
     @InjectRepository(Tag)
     private readonly tagRepository: Repository<Tag>,
+
+    @InjectRepository(Video)
+    private readonly videoRepository:Repository<Video>
   ) {}
 
   async findAll(): Promise<Tag[]> {
@@ -16,16 +20,16 @@ export class TagService {
   }
 
   async findById(id: number): Promise<Tag> {
-    const user = await this.tagRepository.findOne({
+    const video = await this.tagRepository.findOne({
       where: { id },
       relations: ['channel', 'tags'],
     });
   
-    if (!user) {
-      throw new NotFoundException(`User with ID ${id} not found`);
+    if (!video) {
+      throw new NotFoundException(`video with ID ${id} not found`);
     }
   
-    return user;
+    return video;
   }
 
   async create(createTagDto: CreateTagDto): Promise<Tag> {

@@ -1,9 +1,10 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Video } from './entities/video.entity';
 import { CreateVideoDto } from './dto/create-video.dto';
 import { Channel } from '../channel/entities/channel.entity';
+import { Tag } from '../tag/entities/tag.entity';
 
 @Injectable()
 export class VideoService {
@@ -12,7 +13,10 @@ export class VideoService {
     private readonly videoRepository: Repository<Video>,
 
     @InjectRepository(Channel)
-    private readonly channelRepository:Repository<Channel>
+    private readonly channelRepository:Repository<Channel>,
+
+    @InjectRepository(Tag)
+    private readonly tagRepository:Repository<Tag>
   ) {}
 
   async findAll(): Promise<Video[]> {
@@ -32,35 +36,54 @@ export class VideoService {
     return user;
   }
 
-  // async create(createVideoDto: CreateVideoDto): Promise<Video> {
-  //   const video = this.videoRepository.create(createVideoDto);
-  //   return this.videoRepository.save(video);
-  // }
+  async createVideoWithTags(createVideoDto: CreateVideoDto): Promise<Video> {
+    const { title, channelId, tagId } = createVideoDto;
 
-  async create(channelId: number, createVideoDto: CreateVideoDto): Promise<Video> {
-    // Find the user with the given channelId
-    const channel = await this.channelRepository.findOne({
-      where:{
-        id:channelId
-      }
-    });
-
+    // Fetch the channel by channelId
+    const channel = await this.channelRepository.findOne({where:{id:channelId}});
     if (!channel) {
-      throw new ForbiddenException('channel id not found')
+      // Handle the case where the channel is not found
+      throw new NotFoundException('Channel not found');
     }
 
-    try{
-    // Create a new channel and associate it with the user
-    const video = this.videoRepository.create({
-      ...createVideoDto,
-      channel, // Assign the user to the channel
-    });
+    // Fetch tags by tagId
+    const tags = await this.tagRepository.find({where:{id:tagId}});
+    if (!tags) {
+      // Handle the case where not all tags are found
+      throw new NotFoundException('One or more tags not found');
+    }
 
-    // Save the channel to the database
+    // Create a new video
+    const video = this.videoRepository.create({ title, channel, tags });
+
+    // Save the video (and the associated channel and tags)
     return this.videoRepository.save(video);
-  }catch(error){
- throw new ForbiddenException(error)
+  }
+
+async createVideoWithtag(createVideoDto: CreateVideoDto): Promise<Video> {
+  const { title, tagId } = createVideoDto;
+
+  const tag = await this.tagRepository.findOne({where:{id:tagId}});
+
+  if (!tag) {
+    throw new NotFoundException('tag not found');
+  }
+
+  const video = this. videoRepository.create({ title, tags: [tag] });
+
+  return this.videoRepository.save(video);
 }
+
+async getVideos(): Promise<Video[]> {
+  return this.videoRepository.find({ relations: ['tags'] });
 }
+
+async getVideosByTagId(tagId: number): Promise<Video[]> {
+  return this.videoRepository
+    .createQueryBuilder('video')
+    .innerJoinAndSelect('video.tags', 'tag', 'tag.id = :tagId', { tagId })
+    .getMany();
+}
+
   // Additional methods as needed
 }

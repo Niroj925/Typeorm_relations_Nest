@@ -14,6 +14,16 @@ export class Video {
     channel:Channel;
 
     @ManyToMany(()=>Tag)
-    @JoinTable()
+    @JoinTable({
+        name:'video_tag',
+        joinColumn:{
+         name:'video',
+         referencedColumnName:'id'
+        },
+        inverseJoinColumn:{
+         name:'tag',
+         referencedColumnName:'id'
+        }
+       })
     tags:Tag[];
 }
